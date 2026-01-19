@@ -41,6 +41,23 @@
       display: block;
     }
 
+    .coming-soon {
+      position: fixed;
+      top: 18px;
+      left: 22px;
+      z-index: 2;
+      padding: 8px 14px;
+      border-radius: 999px;
+      border: 1px solid rgba(231, 242, 249, 0.2);
+      background: rgba(6, 9, 15, 0.6);
+      color: rgba(231, 242, 249, 0.85);
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      pointer-events: none;
+    }
+
     .fallback {
       position: fixed;
       inset: auto 20px 20px 20px;
@@ -68,6 +85,7 @@
 </head>
 <body>
   <div id="globe"></div>
+  <div class="coming-soon">COMING SOON</div>
 
   <div class="fallback" id="fallback">WebGL is unavailable in this browser. Please enable hardware acceleration.</div>
 
