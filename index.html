@@ -1,0 +1,189 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Prithibi | 3D Globe</title>
+  <meta name="description" content="A living 3D globe experience for prithibi.org.">
+  <style>
+    :root {
+      color-scheme: only light;
+      --bg: #06090f;
+      --ink: #e7f2f9;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html,
+    body {
+      width: 100%;
+      height: 100%;
+      background: var(--bg);
+      overflow: hidden;
+      color: var(--ink);
+      font-family: "Segoe UI", system-ui, sans-serif;
+    }
+
+    #globe {
+      position: relative;
+      width: 100vw;
+      height: 100vh;
+      min-height: 100vh;
+    }
+
+    #globe canvas {
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+
+    .fallback {
+      position: fixed;
+      inset: auto 20px 20px 20px;
+      background: rgba(10, 20, 28, 0.9);
+      border: 1px solid var(--stroke);
+      color: var(--ink);
+      padding: 14px 18px;
+      border-radius: 14px;
+      font-size: 13px;
+      display: none;
+      z-index: 2;
+    }
+
+    .fallback.show {
+      display: block;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      * {
+        animation: none !important;
+        transition: none !important;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div id="globe"></div>
+
+  <div class="fallback" id="fallback">WebGL is unavailable in this browser. Please enable hardware acceleration.</div>
+
+  <script src="https://unpkg.com/three@0.158.0/build/three.min.js"></script>
+  <script src="https://unpkg.com/globe.gl@2.45.0/dist/globe.gl.min.js"></script>
+  <script>
+    (function () {
+      var container = document.getElementById("globe");
+      var fallback = document.getElementById("fallback");
+      var prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+      if (!window.WebGLRenderingContext || !container) {
+        fallback.classList.add("show");
+        return;
+      }
+
+      if (typeof Globe === "undefined") {
+        fallback.textContent = "Unable to load the 3D globe. Please refresh.";
+        fallback.classList.add("show");
+        return;
+      }
+
+      var globe = Globe()(container)
+        .globeImageUrl("assets/earth-blue-marble.jpg")
+        .bumpImageUrl("assets/earth-topology.png")
+        .showAtmosphere(true)
+        .atmosphereColor("#7ad7ff")
+        .atmosphereAltitude(0.18)
+        .backgroundColor("rgba(0, 0, 0, 0)");
+
+      var material = globe.globeMaterial();
+      material.bumpScale = 8;
+      material.shininess = 8;
+      material.specular = new THREE.Color(0x1d2b36);
+
+      var textureLoader = new THREE.TextureLoader();
+      textureLoader.load("assets/earth-night.jpg", function (nightTexture) {
+        material.emissive = new THREE.Color(0x142946);
+        material.emissiveMap = nightTexture;
+        material.emissiveIntensity = 0.8;
+        material.needsUpdate = true;
+      });
+
+      var arcsData = [
+        { startLat: 23.8103, startLng: 90.4125, endLat: 51.5072, endLng: -0.1276, color: ["#ffb86b", "#ff6b6b"] },
+        { startLat: 23.8103, startLng: 90.4125, endLat: 40.7128, endLng: -74.006, color: ["#37c8ff", "#60a5fa"] },
+        { startLat: 23.8103, startLng: 90.4125, endLat: 35.6895, endLng: 139.6917, color: ["#f9a8d4", "#fb7185"] },
+        { startLat: 23.8103, startLng: 90.4125, endLat: -33.8688, endLng: 151.2093, color: ["#a7f3d0", "#22c55e"] },
+        { startLat: 51.5072, startLng: -0.1276, endLat: 48.8566, endLng: 2.3522, color: ["#fef08a", "#f59e0b"] },
+        { startLat: 40.7128, startLng: -74.006, endLat: -23.5505, endLng: -46.6333, color: ["#93c5fd", "#2563eb"] },
+        { startLat: 28.6139, startLng: 77.209, endLat: 1.3521, endLng: 103.8198, color: ["#a78bfa", "#f472b6"] },
+        { startLat: 55.7558, startLng: 37.6176, endLat: 30.0444, endLng: 31.2357, color: ["#fb923c", "#f97316"] }
+      ];
+
+      globe
+        .arcsData(arcsData)
+        .arcColor(function (d) { return d.color; })
+        .arcStroke(0.8)
+        .arcDashLength(0.35)
+        .arcDashGap(1.3)
+        .arcDashInitialGap(function () { return Math.random() * 2; })
+        .arcDashAnimateTime(1600)
+        .arcAltitudeAutoScale(0.6);
+
+      var pointsData = [
+        { lat: 23.8103, lng: 90.4125 },
+        { lat: 35.6895, lng: 139.6917 },
+        { lat: 51.5072, lng: -0.1276 },
+        { lat: 40.7128, lng: -74.006 },
+        { lat: -33.8688, lng: 151.2093 },
+        { lat: 28.6139, lng: 77.209 },
+        { lat: -23.5505, lng: -46.6333 },
+        { lat: 1.3521, lng: 103.8198 }
+      ];
+
+      globe
+        .pointsData(pointsData)
+        .pointColor(function () { return "#ffd166"; })
+        .pointAltitude(0.01)
+        .pointRadius(0.25);
+
+      globe
+        .ringsData(pointsData)
+        .ringColor(function () { return "rgba(94, 234, 212, 0.65)"; })
+        .ringMaxRadius(3.2)
+        .ringPropagationSpeed(2.1)
+        .ringRepeatPeriod(2000);
+
+      var controls = globe.controls();
+      controls.enableDamping = true;
+      controls.dampingFactor = 0.08;
+      controls.enablePan = false;
+      controls.minDistance = 240;
+      controls.maxDistance = 620;
+      controls.autoRotate = !prefersReducedMotion;
+      controls.autoRotateSpeed = 0.45;
+
+      function onResize() {
+        if (typeof globe.width === "function") {
+          globe.width(container.clientWidth);
+          globe.height(container.clientHeight);
+          return;
+        }
+        if (typeof globe.renderer === "function") {
+          globe.renderer().setSize(container.clientWidth, container.clientHeight);
+        }
+      }
+
+      window.addEventListener("resize", onResize);
+
+      globe.pointOfView({ lat: 23.8103, lng: 90.4125, altitude: 2.6 }, 1600);
+      if (typeof globe.renderer === "function") {
+        globe.renderer().setPixelRatio(Math.min(window.devicePixelRatio, 2));
+      }
+      onResize();
+    })();
+  </script>
+</body>
+</html>
