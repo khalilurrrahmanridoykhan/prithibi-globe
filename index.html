@@ -1,5 +1,6 @@
 <!doctype html>
 <html lang="en">
+
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -9,7 +10,7 @@
     :root {
       color-scheme: only light;
       --bg: #06090f;
-      --ink: #e7f2f9;
+      --ink: #FFFFFF;
     }
 
     * {
@@ -41,10 +42,64 @@
       display: block;
     }
 
+    .info-panel {
+      position: fixed;
+      left: 28px;
+      top: 36%;
+      transform: translateY(-50%);
+      z-index: 2;
+      max-width: 300px;
+      padding: 18px 20px;
+      border-radius: 18px;
+      /* border: 1px solid rgba(231, 242, 249, 0.18); */
+      /* background: rgba(6, 9, 15, 0.68); */
+
+      color: var(--ink);
+    }
+
+    .info-panel h1 {
+      font-size: 80px;
+
+      margin-bottom: 78px;
+    }
+
+    .info-panel p {
+      font-size: 16px;
+      line-height: 1.6;
+      color: #FFFFFF;
+      margin-bottom: 147px;
+    }
+
+    .company-badge {
+      position: fixed;
+      left: 45px;
+      bottom: 22px;
+      z-index: 2;
+      align-items: center;
+      gap: 10px;
+      padding: 8px 12px;
+      border-radius: 12px;
+      color: #FFFFFF;
+      font-size: 12px;
+      letter-spacing: 0.06em;
+    }
+
+    .company-badge img {
+      width: 80px;
+      height: 80px;
+      object-fit: contain;
+      display: block;
+      text-align: center;
+      align-items: center;
+      margin-left: 27px;
+      margin-bottom: 10px;
+    }
+
     .coming-soon {
       position: fixed;
-      top: 18px;
-      left: 22px;
+      bottom: 22px;
+      left: 85%;
+      transform: translateX(-50%);
       z-index: 2;
       padding: 8px 14px;
       border-radius: 999px;
@@ -75,6 +130,22 @@
       display: block;
     }
 
+    @media (max-width: 720px) {
+      .info-panel {
+        left: 16px;
+        right: 16px;
+        top: auto;
+        bottom: 70px;
+        transform: none;
+        max-width: none;
+      }
+
+      .company-badge {
+        left: 16px;
+        bottom: 16px;
+      }
+    }
+
     @media (prefers-reduced-motion: reduce) {
       * {
         animation: none !important;
@@ -83,9 +154,19 @@
     }
   </style>
 </head>
+
 <body>
   <div id="globe"></div>
-  <div class="coming-soon">COMING SOON</div>
+  <aside class="info-panel">
+    <h1>Prithibi</h1>
+    <p>a cloud-based geospatial platform that enables individuals and communities to collaboratively map
+      their neighborhoods, analyze local data, and share location-based knowledge.</p>
+  </aside>
+  <div class="company-badge">
+    <img src="assets/logo/gmgi_logo.png" alt="GMGI Solutions LTD logo">
+    <span>GMGI Solutions LTD</span>
+  </div>
+  <div class="coming-soon">COMING SOON...</div>
 
   <div class="fallback" id="fallback">WebGL is unavailable in this browser. Please enable hardware acceleration.</div>
 
@@ -178,7 +259,7 @@
       controls.enableDamping = true;
       controls.dampingFactor = 0.08;
       controls.enablePan = false;
-      controls.minDistance = 240;
+      controls.minDistance = 200;
       controls.maxDistance = 620;
       controls.autoRotate = !prefersReducedMotion;
       controls.autoRotateSpeed = 0.45;
@@ -196,7 +277,7 @@
 
       window.addEventListener("resize", onResize);
 
-      globe.pointOfView({ lat: 23.8103, lng: 90.4125, altitude: 2.6 }, 1600);
+      globe.pointOfView({ lat: 23.8103, lng: 90.4125, altitude: 1.5 }, 1600);
       if (typeof globe.renderer === "function") {
         globe.renderer().setPixelRatio(Math.min(window.devicePixelRatio, 2));
       }
@@ -204,4 +285,5 @@
     })();
   </script>
 </body>
+
 </html>
